@@ -30,6 +30,6 @@ app.get("/files", upload, (req, res) => {
 	});
 });
 
-app.listen(8000, () => {
-	console.log("listening on https://localhost:8000");
+app.listen(process.env.PORT, () => {
+	console.log(`listening on https://localhost:${process.env.PORT}`);
 });
