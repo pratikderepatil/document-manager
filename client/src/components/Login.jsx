@@ -27,7 +27,7 @@ const Login = () => {
 	// const navigate = useNavigate();
 
 	const handleSubmit = () => {
-		fetch("http://localhost:8080/user/login", {
+		fetch("https://document-manager-onzo.onrender.com/user/login", {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json",
@@ -37,6 +37,10 @@ const Login = () => {
 			.then((res) => res.json())
 			.then((res) => {
 				console.log(res);
+				localStorage.setItem(
+					"userDetails",
+					JSON.stringify({ name: res.user, id: res.id })
+				);
 				toast({
 					title: "Login Success! Welcome✨",
 					description: "It's a start of something amazing.",

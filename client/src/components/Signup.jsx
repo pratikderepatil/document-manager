@@ -28,7 +28,7 @@ const Signup = () => {
 	const navigate = useNavigate();
 
 	const handleSubmit = () => {
-		fetch("http://localhost:8080/user/signup", {
+		fetch("https://document-manager-onzo.onrender.com/user/signup", {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json",
@@ -38,6 +38,7 @@ const Signup = () => {
 			.then((res) => res.json())
 			.then((res) => {
 				console.log(res);
+				
 				toast({
 					title: "New Registration Success! Welcome✨",
 					description: "It's a start of something amazing.",
@@ -60,7 +61,7 @@ const Signup = () => {
 			});
 	};
 	return (
-		<Card maxW={"sm"} m="20vh auto">
+		<Card maxW={"sm"} m="15vh auto" padding={5}>
 			<CardHeader>
 				<Flex justifyContent={"space-between"} alignItems="center">
 					<div></div>
