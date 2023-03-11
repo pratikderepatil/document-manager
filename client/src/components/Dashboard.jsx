@@ -28,7 +28,6 @@ const Dashboard = () => {
 			body: formData,
 		})
 			.then((res) => {
-				console.log(res);
 				toast({
 					title: "File Uploaded successfully!",
 					position: "top",
@@ -36,7 +35,6 @@ const Dashboard = () => {
 					duration: 5000,
 					isClosable: true,
 				});
-				setSelect("");
 			})
 			.catch((err) => {
 				toast({
@@ -47,9 +45,7 @@ const Dashboard = () => {
 					duration: 5000,
 					isClosable: true,
 				});
-				console.log(err);
 			});
-		console.log(select);
 	};
 	return (
 		<>

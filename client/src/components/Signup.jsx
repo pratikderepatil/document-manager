@@ -28,17 +28,18 @@ const Signup = () => {
 	const navigate = useNavigate();
 
 	const handleSubmit = () => {
-		fetch("https://document-manager-onzo.onrender.com/user/signup", {
+		fetch(`${process.env.REACT_APP_SERVER_URL}user/signup`, {
 			method: "POST",
+
 			headers: {
-				"Content-type": "application/json",
+				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ name: name, email: email, password: password }),
 		})
 			.then((res) => res.json())
 			.then((res) => {
 				console.log(res);
-				
+
 				toast({
 					title: "New Registration Success! Welcome✨",
 					description: "It's a start of something amazing.",
