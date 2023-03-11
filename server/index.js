@@ -1,35 +1,24 @@
 require("dotenv").config();
 const express = require("express");
-const multer = require("multer");
 const cors = require("cors");
+const fileRouter = require("./src/routes/file.router");
+const userRouter = require("./src/routes/user.router");
+const connect = require("./src/congif/db");
+const bodyparser = require("body-parser");
+const mongoose = require("mongoose");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+app.use(bodyparser.urlencoded({ extended: false }));
+app.use(bodyparser.json());
 
-const upload = multer({
-	storage: multer.diskStorage({
-		destination: function (req, file, cb) {
-			cb(null, "uploads");
-		},
-		filename: function (req, file, cb) {
-			cb(null, file.originalname);
-		},
-	}),
-}).single("fileupload");
+mongoose.set("strictQuery", false);
 
-app.post("/upload", upload, (req, res) => {
-	res.send("File uploaded successfully!");
-});
+app.use("/user", userRouter);
+app.use("/file", fileRouter);
 
-app.get("/files", upload, (req, res) => {
-	const testFolder = "./uploads/";
-	const fs = require("fs");
-	fs.readdir(testFolder, (err, files) => {
-		res.send(files);
-	});
-});
-
-app.listen(process.env.PORT, () => {
-	console.log(`listening on https://localhost:${process.env.PORT}`);
+app.listen(process.env.PORT, async () => {
+	connect();
+	console.log(`listening on http://localhost:${process.env.PORT}`);
 });
