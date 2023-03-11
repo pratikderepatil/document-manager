@@ -44,6 +44,7 @@ app.post("/login", async (req, res) => {
 			message: "Login Success",
 			user: user.name,
 			id: user._id,
+			email: user.email,
 		});
 	} else {
 		return res.status(401).send("invalid credentials");

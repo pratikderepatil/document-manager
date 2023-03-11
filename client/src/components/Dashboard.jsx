@@ -3,38 +3,75 @@ import {
 	Flex,
 	FormControl,
 	FormLabel,
+	Heading,
 	Input,
 	Tab,
+	Table,
+	TableContainer,
 	TabList,
 	TabPanel,
 	TabPanels,
 	Tabs,
+	Tbody,
+	Td,
+	Th,
+	Thead,
+	Tr,
 	useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
 
 const Dashboard = () => {
 	const user = JSON.parse(localStorage.getItem("userDetails")) || "";
 	const [select, setSelect] = useState("");
+	const [history, setHistory] = useState([]);
 	const toast = useToast();
 	const handleUpload = (e) => {
 		const formData = new FormData();
 		formData.append("fileupload", select);
 		e.preventDefault();
-		fetch("http://localhost:8080/file/upload", {
+		fetch(`${process.env.REACT_APP_SERVER_URL}file/uploadDetails`, {
 			method: "POST",
-			"Content-Type": "multipart/form-data",
-			body: formData,
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				filename: select.name,
+				filesize: select.size,
+				email: user.email,
+			}),
 		})
 			.then((res) => {
-				toast({
-					title: "File Uploaded successfully!",
-					position: "top",
-					status: "success",
-					duration: 5000,
-					isClosable: true,
-				});
+				if (res.status !== 200) {
+					toast({
+						title: "",
+						description: "This file already exists, try with another name",
+						position: "top",
+						status: "warning",
+						duration: 5000,
+						isClosable: true,
+					});
+				} else {
+					fetch(`${process.env.REACT_APP_SERVER_URL}file/upload`, {
+						method: "POST",
+						"Content-Type": "multipart/form-data",
+						body: formData,
+					})
+						.then((res) => {
+							toast({
+								title: "File Uploaded successfully!",
+								position: "top",
+								status: "success",
+								duration: 5000,
+								isClosable: true,
+							});
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+					getUploadHistory();
+				}
 			})
 			.catch((err) => {
 				toast({
@@ -47,6 +84,31 @@ const Dashboard = () => {
 				});
 			});
 	};
+	const handleDelete = (id) => {
+		fetch(`${process.env.REACT_APP_SERVER_URL}file/deleteUpload/${id}`, {
+			method: "DELETE",
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				console.log(res);
+				toast({
+					title: "File Deleted successfully!",
+					position: "top",
+					status: "success",
+					duration: 5000,
+					isClosable: true,
+				});
+				getUploadHistory();
+			});
+	};
+	const getUploadHistory = () => {
+		fetch(`${process.env.REACT_APP_SERVER_URL}file/uploadDetails/${user.email}`)
+			.then((res) => res.json())
+			.then((res) => setHistory(res));
+	};
+	useEffect(() => {
+		getUploadHistory();
+	}, []);
 	return (
 		<>
 			<Navbar name={user.name} />
@@ -80,7 +142,42 @@ const Dashboard = () => {
 					</TabPanel>
 					{/* initially not mounted */}
 					<TabPanel>
-						<p>two!</p>
+						{history.length ? (
+							<TableContainer>
+								<Table variant="striped" colorScheme="linkedin">
+									<Thead>
+										<Tr>
+											<Th>File Name</Th>
+											<Th>Size</Th>
+											<Th>Action</Th>
+										</Tr>
+									</Thead>
+									<Tbody>
+										{history?.map((ele) => {
+											return (
+												<Tr key={ele._id}>
+													<Td>{ele.filename}</Td>
+													<Td>{Math.floor(ele.filesize / 1000)} kb</Td>
+													<Td>
+														<Button
+															colorScheme={"red"}
+															size="sm"
+															onClick={() => {
+																handleDelete(ele._id);
+															}}
+														>
+															Delete
+														</Button>
+													</Td>
+												</Tr>
+											);
+										})}
+									</Tbody>
+								</Table>
+							</TableContainer>
+						) : (
+							<Heading>No files uploaded</Heading>
+						)}
 					</TabPanel>
 				</TabPanels>
 			</Tabs>

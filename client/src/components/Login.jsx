@@ -17,17 +17,17 @@ import React from "react";
 import { useState } from "react";
 import { useToast } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 const Login = () => {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [show, setShow] = React.useState(false);
 	const handleClick = () => setShow(!show);
 	const toast = useToast();
-	// const navigate = useNavigate();
+	const navigate = useNavigate();
 
 	const handleSubmit = () => {
-		fetch("https://document-manager-onzo.onrender.com/user/login", {
+		fetch(`${process.env.REACT_APP_SERVER_URL}user/login`, {
 			method: "POST",
 			headers: {
 				"Content-type": "application/json",
@@ -39,7 +39,7 @@ const Login = () => {
 				console.log(res);
 				localStorage.setItem(
 					"userDetails",
-					JSON.stringify({ name: res.user, id: res.id })
+					JSON.stringify({ name: res.user, id: res.id, email: res.email })
 				);
 				toast({
 					title: "Login Success! Welcome✨",
@@ -49,6 +49,7 @@ const Login = () => {
 					duration: 5000,
 					isClosable: true,
 				});
+				navigate("/dashboard");
 			})
 			.catch((err) => {
 				toast({

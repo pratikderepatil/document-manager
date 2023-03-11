@@ -12,7 +12,7 @@ const Navbar = ({ name }) => {
 						size={"lg"}
 						colorScheme="messenger"
 						onClick={() => {
-							localStorage.setItem("userDetails", "");
+							localStorage.removeItem("userDetails");
 						}}
 					>
 						Logout
